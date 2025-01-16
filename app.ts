@@ -1,24 +1,25 @@
 import express from "express";
 import env from "dotenv";
 import { PrismaClient } from "@prisma/client";
+import principalRouter from "./src/routes/principalRoutes";
+import coordinatorRouter from "./src/routes/coordinatorRoutes";
+
 env.config();
 
 async function initApp() {
   const app = express();
   const prisma = new PrismaClient();
-  prisma.$connect().then(() => {
+  try {
+    await prisma.$connect();
     console.log("Database connected");
-  });
-  prisma.$on("beforeExit", () => {
-    prisma.$disconnect().then(() => {
-      console.log("Database disconnected");
-    });
-  });
-  prisma.$on("error", (e: Error) => {
-    console.error(e);
-  });
-  app.use(express.urlencoded({ extended: true }));
+  } catch (err) {
+    console.log(err);
+  }
+
   app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
+  app.use("/principal", principalRouter);
+  app.use("/coordinator", coordinatorRouter);
 
   return app;
 }
