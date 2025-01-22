@@ -1,28 +1,28 @@
 import { PrismaClient } from "@prisma/client";
-
+import { CoordinatorType } from "../schemas/coordinatorSchemas";
+import { updatePrincipal } from "./principalModel";
 const prisma = new PrismaClient();
 
-export async function createCoordinator(
-  name: string,
-  email: string,
-  phone: string,
-  principalId: number,
-  instructors: number[],
-  createdAt: Date,
-  updatedAt: Date
-) {
-  const coordinator = await prisma.coordinator.create({
+export async function createCoordinator(coordinator: CoordinatorType) {
+  const newCoordinator = await prisma.coordinator.create({
     data: {
-      name,
-      email,
-      phone,
-      principalId,
-      instructors: {
-        connect: instructors.map((id) => ({ id })),
-      },
-      createdAt,
-      updatedAt,
+      name: coordinator.name,
+      email: coordinator.email,
+      phone: coordinator.phone,
+      principalId: coordinator.principalId,
+      principal: coordinator.principal,
+      department: coordinator.department,
+      createdAt: new Date(),
     },
   });
-  return coordinator;
+
+  await updatePrincipal(
+    coordinator.principalId.toString(),
+    coordinator.principal.name,
+    coordinator.principal.email,
+    coordinator.principal.phone,
+    newCoordinator
+  );
+
+  return newCoordinator;
 }

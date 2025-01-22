@@ -1,13 +1,16 @@
 import zod from "zod";
-
-const createCoordinatorSchema = zod.object({
+import { instructorSchema } from "./instructorSchemas";
+import { principalZodSchema } from "./principalSchemas";
+export const coordinatorZodSchema: Zod.ZodSchema = zod.object({
   name: zod.string(),
   email: zod.string().email(),
   phone: zod.string(),
   principalId: zod.number(),
-  instructors: zod.array(zod.number()),
-  createdAt: zod.date(),
-  updatedAt: zod.date(),
+  principal: principalZodSchema,
+  department: zod.string(),
+  instructors: zod.array(instructorSchema).optional(),
+  createdAt: zod.date().optional(),
+  updatedAt: zod.date().optional(),
 });
 
-export { createCoordinatorSchema };
+export type CoordinatorType = zod.infer<typeof coordinatorZodSchema>;

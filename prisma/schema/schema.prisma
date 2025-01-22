@@ -21,6 +21,7 @@ model Principal{
   email     String @unique
   phone     String
   coordinators Coordinator[]
+  instructors Instructor[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -28,8 +29,9 @@ model Principal{
 model Coordinator {
   id        Int   @id @default(autoincrement())
   name      String
-  email     String
+  email     String @unique
   phone     String
+  department    String
   principal  Principal @relation(fields: [principalId], references: [id])
   principalId Int
   instructors Instructor[]
@@ -40,11 +42,15 @@ model Coordinator {
 model Instructor {
   id        Int   @id @default(autoincrement())
   name      String
-  email     String 
+  email     String  @unique
   phone     String
   department    String
-  coordinators Coordinator[]
-  students Student[] 
+  coordinator Coordinator @relation(fields: [coordinatorId], references: [id])
+  coordinatorId Int
+  principal  Principal @relation(fields: [principalId], references: [id])
+  principalId Int
+  students Student[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -52,7 +58,7 @@ model Instructor {
 model Student {
   id        Int   @id @default(autoincrement())
   name      String
-  email     String
+  email     String @unique
   phone     String
   instructors Instructor[]
   createdAt DateTime @default(now())
