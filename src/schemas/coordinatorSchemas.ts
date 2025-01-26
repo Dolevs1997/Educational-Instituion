@@ -6,11 +6,11 @@ export const coordinatorZodSchema: Zod.ZodSchema = zod.object({
   email: zod.string().email(),
   phone: zod.string(),
   principalId: zod.number(),
-  principal: principalZodSchema,
+  principal: zod.lazy(() => principalZodSchema).optional(),
   department: zod.string(),
   instructors: zod.array(instructorSchema).optional(),
-  createdAt: zod.date().optional(),
-  updatedAt: zod.date().optional(),
+  createdAt: zod.coerce.date().optional(),
+  updatedAt: zod.coerce.date().optional(),
 });
 
 export type CoordinatorType = zod.infer<typeof coordinatorZodSchema>;

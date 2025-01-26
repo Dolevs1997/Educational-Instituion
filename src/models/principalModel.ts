@@ -1,8 +1,7 @@
 import { PrismaClient } from "@prisma/client";
-import {
-  PrincipalType,
-  pricipalCoordinatorsType,
-} from "../schemas/principalSchemas";
+import { PrincipalType } from "../schemas/principalSchemas";
+import { z } from "zod";
+import { coordinatorZodSchema } from "../schemas/coordinatorSchemas";
 const prisma = new PrismaClient();
 
 export async function createPrincipal(data: PrincipalType) {
@@ -11,10 +10,6 @@ export async function createPrincipal(data: PrincipalType) {
       name: data.name,
       email: data.email,
       phone: data.phone,
-      coordinators: data.coordinators
-        ? { create: data.coordinators }
-        : undefined,
-      instructors: data.instructors ? { create: data.instructors } : undefined,
       createdAt: new Date(),
     },
   });
@@ -22,23 +17,21 @@ export async function createPrincipal(data: PrincipalType) {
   return principal;
 }
 
-export async function updatePrincipal(
-  id: string,
-  name: string,
-  email: string,
-  phone: string,
-  coordinators: pricipalCoordinatorsType
-) {
+export async function updatePrincipal(id: number, data: any) {
+  console.log("Updating principal with data:", data);
   const principal = await prisma.principal.update({
-    where: { id: parseInt(id) },
+    where: { id: id },
     data: {
-      name,
-      email,
-      phone,
-      coordinators: coordinators ? { create: coordinators } : undefined,
+      name: data.name,
+      email: data.email,
+      phone: data.phone,
+      coordinators: data.coordinators,
+      instructors: data.instructors,
       updatedAt: new Date(),
     },
   });
+
+  console.log("Updated principal:", principal);
 
   return principal;
 }

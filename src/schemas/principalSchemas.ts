@@ -7,11 +7,11 @@ export const principalZodSchema: zod.ZodSchema = zod.object({
   name: zod.string(),
   email: zod.string().email(),
   phone: zod.string(),
-  coordinators: zod.array(coordinatorZodSchema).optional(),
+  coordinators: zod.array(zod.lazy(() => coordinatorZodSchema)).optional(),
+
   instructors: zod.array(instructorSchema).optional(),
-  createdAt: zod.date().optional(),
-  updatedAt: zod.date().optional(),
+  createdAt: zod.coerce.date().optional(),
+  updatedAt: zod.coerce.date().optional(),
 });
 
 export type PrincipalType = zod.infer<typeof principalZodSchema>;
-export type pricipalCoordinatorsType = PrincipalType["coordinators"];

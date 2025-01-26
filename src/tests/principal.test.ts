@@ -5,7 +5,6 @@ import { Express } from "express";
 import { z } from "zod";
 import { coordinatorZodSchema } from "../schemas/coordinatorSchemas";
 import { principalZodSchema, PrincipalType } from "../schemas/principalSchemas";
-// import { coordinator } from "./coordinator.test";
 const prisma = new PrismaClient();
 let app: Express;
 let principalTemp: any;

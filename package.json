@@ -15,7 +15,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server.ts",
+    "dev": "nodemon server.ts",
     "principalTest": "jest --detectOpenHandles --forceExit --runInBand --verbose  ./src/tests/principal.test.ts",
     "coordinatorTest": "jest --detectOpenHandles --forceExit --runInBand --verbose  ./src/tests/coordinator.test.ts"
   },

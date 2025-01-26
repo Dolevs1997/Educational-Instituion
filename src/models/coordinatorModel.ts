@@ -4,25 +4,41 @@ import { updatePrincipal } from "./principalModel";
 const prisma = new PrismaClient();
 
 export async function createCoordinator(coordinator: CoordinatorType) {
+  console.log("Creating coordinator with data:", coordinator);
+
   const newCoordinator = await prisma.coordinator.create({
     data: {
       name: coordinator.name,
       email: coordinator.email,
       phone: coordinator.phone,
-      principalId: coordinator.principalId,
-      principal: coordinator.principal,
       department: coordinator.department,
-      createdAt: new Date(),
+      principalId: coordinator.principalId,
+    },
+  });
+  const principal = await prisma.principal.findUnique({
+    where: {
+      id: coordinator.principalId,
+    },
+  });
+  console.log("Created coordinator:", newCoordinator);
+  await updatePrincipal(coordinator.principalId, {
+    ...principal,
+    coordinators: {
+      connect: {
+        id: newCoordinator.id,
+      },
     },
   });
 
-  await updatePrincipal(
-    coordinator.principalId.toString(),
-    coordinator.principal.name,
-    coordinator.principal.email,
-    coordinator.principal.phone,
-    newCoordinator
-  );
-
   return newCoordinator;
+}
+
+export async function getCoordinatorById(id: number) {
+  const coordinator = await prisma.coordinator.findUnique({
+    where: {
+      id: id,
+    },
+  });
+
+  return coordinator;
 }

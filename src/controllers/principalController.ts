@@ -15,9 +15,7 @@ function validatePrincipalData(data: any) {
     throw new Error("Missing required fields");
   }
   try {
-    console.log("data", data);
     const principal = principalZodSchema.parse(data);
-    console.log("principal", principal);
     return principal;
   } catch (error: any) {
     if (error instanceof zod.ZodError) {
@@ -46,13 +44,7 @@ const update = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
     const p = validatePrincipalData(req.body);
-    const principal = await updatePrincipal(
-      id,
-      p.name,
-      p.email,
-      p.phone,
-      p.coordinators
-    );
+    const principal = await updatePrincipal(parseInt(id), p);
     res.status(200).send(principal);
   } catch (error: any) {
     res.status(400).send(error.message);

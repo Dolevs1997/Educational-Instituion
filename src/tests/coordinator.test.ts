@@ -1,52 +1,66 @@
-// import initApp from "../../app";
-// import request from "supertest";
-// import { PrismaClient } from "@prisma/client";
-// import { Express } from "express";
-// import { principal } from "./principal.test";
-// const prisma = new PrismaClient();
-// let app: Express;
-// let pricipalId: any;
-// const coordinator = {
-//   name: "Jane Doe",
-//   email: "Jane@gmail.com",
-//   phone: "0987654321",
-//   principalId: pricipalId,
-//   instructors: [],
-//   createdAt: new Date(),
-//   updatedAt: new Date(),
-// };
+import initApp from "../../app";
+import request from "supertest";
+import { PrismaClient } from "@prisma/client";
+import { Express } from "express";
+import { PrincipalType } from "../schemas/principalSchemas";
+const prisma = new PrismaClient();
+let app: Express;
+let pricipalId: number | undefined;
+let coordinatorId: number | undefined;
+const principal: PrincipalType = {
+  name: "John Doe",
+  email: "JohnDoe@gmail.com",
+  phone: "1234567890",
+};
 
-// beforeAll(async () => {
-//   // Initialize the application
-//   app = await initApp();
-//   // Perform any additional setup if needed
-//   await prisma.$connect();
-//   await prisma.coordinator.deleteMany();
-//   await prisma.principal.deleteMany();
-// });
+const coordinator = {
+  name: "Jane Doe",
+  email: "Jane@gmail.com",
+  phone: "0987654321",
+  principalId: pricipalId,
+  principal: principal,
+  department: "Computer Science",
+};
 
-// afterAll(async () => {
-//   await prisma.$disconnect();
-// });
+beforeAll(async () => {
+  // Initialize the application
+  app = await initApp();
+  // Perform any additional setup if needed
+  await prisma.$connect();
+  await prisma.coordinator.deleteMany();
+  await prisma.principal.deleteMany();
 
-// describe("Coordinator POST test", () => {
-//   test("create a new coordinator", async () => {
-//     // // Create a principal
-//     await request(app).post("/principal/create").send(principal);
+  // Create a principal
+  const res = await request(app)
+    .post("/principal/create")
+    .send(principal)
+    .expect(201);
 
-//     // Update the principalId
-//     pricipalId = await prisma.principal.findFirst({
-//       where: { name: principal.name },
-//     });
-//     // Get the principalId
-//     coordinator.principalId = pricipalId.id;
+  console.log("res.body", res.body);
+  pricipalId = res.body.id;
+  coordinator.principalId = pricipalId;
+  coordinator.principal = res.body;
+});
 
-//     // Create a coordinator
-//     const res = await request(app)
-//       .post("/coordinator/create")
-//       .send(coordinator);
-//     console.log(res);
-//     expect(res.status).toBe(201);
-//     expect(res.text).toBe("Coordinator created successfully");
-//   });
-// });
+afterAll(async () => {
+  await prisma.$disconnect();
+});
+
+describe("-----Coordinator Test------", () => {
+  test("create a new coordinator", async () => {
+    const res = await request(app)
+      .post("/coordinator/create")
+      .send(coordinator);
+    expect(res.status).toBe(201);
+    console.log("res.body", res.body);
+
+    coordinatorId = res.body.id;
+  });
+
+  // test("get coordinator by id", async () => {
+  //   const res = await request(app)
+  //     .get(`/coordinator/getById/${coordinatorId}`)
+  //     .expect(200);
+  //   expect(res.body).toMatchObject(coordinator);
+  // });
+});
