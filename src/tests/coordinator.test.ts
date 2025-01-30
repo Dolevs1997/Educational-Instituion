@@ -53,14 +53,30 @@ describe("-----Coordinator Test------", () => {
       .send(coordinator);
     expect(res.status).toBe(201);
     console.log("res.body", res.body);
-
+    console.log(res.body.id);
     coordinatorId = res.body.id;
   });
 
-  // test("get coordinator by id", async () => {
-  //   const res = await request(app)
-  //     .get(`/coordinator/getById/${coordinatorId}`)
-  //     .expect(200);
-  //   expect(res.body).toMatchObject(coordinator);
-  // });
+  test("get coordinator by id", async () => {
+    const res = await request(app)
+      .get(`/coordinator/getById/${coordinatorId}`)
+      .expect(200);
+    console.log("res.body", res.body);
+  });
+
+  test("update coordinator", async () => {
+    const res = await request(app)
+      .put("/coordinator/update/" + coordinatorId)
+      .send({ ...coordinator, name: "Jane Doe Updated" })
+      .expect(200);
+    console.log("res.body", res.body);
+    expect(res.body.name).toBe("Jane Doe Updated");
+  });
+
+  test("delete coordinator", async () => {
+    const res = await request(app)
+      .delete("/coordinator/delete" + coordinatorId)
+      .expect(200);
+    console.log("res.body", res.body);
+  });
 });

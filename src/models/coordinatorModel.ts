@@ -42,3 +42,26 @@ export async function getCoordinatorById(id: number) {
 
   return coordinator;
 }
+
+export async function updateCoordinator(
+  id: number,
+  coordinator: CoordinatorType
+) {
+  console.log("Updating coordinator with data:", coordinator);
+  console.log("coordinator.id", coordinator.id);
+  const updatedCoordinator = await prisma.coordinator.update({
+    where: {
+      id: id,
+    },
+    data: {
+      name: coordinator.name,
+      email: coordinator.email,
+      phone: coordinator.phone,
+      department: coordinator.department,
+      principalId: coordinator.principalId,
+      updatedAt: new Date(),
+    },
+  });
+
+  return updatedCoordinator;
+}

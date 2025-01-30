@@ -2,6 +2,7 @@ import zod from "zod";
 import { instructorSchema } from "./instructorSchemas";
 import { principalZodSchema } from "./principalSchemas";
 export const coordinatorZodSchema: Zod.ZodSchema = zod.object({
+  id: zod.number().optional(),
   name: zod.string(),
   email: zod.string().email(),
   phone: zod.string(),
