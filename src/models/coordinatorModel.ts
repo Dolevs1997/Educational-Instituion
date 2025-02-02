@@ -4,8 +4,6 @@ import { updatePrincipal } from "./principalModel";
 const prisma = new PrismaClient();
 
 export async function createCoordinator(coordinator: CoordinatorType) {
-  console.log("Creating coordinator with data:", coordinator);
-
   const newCoordinator = await prisma.coordinator.create({
     data: {
       name: coordinator.name,
@@ -20,7 +18,6 @@ export async function createCoordinator(coordinator: CoordinatorType) {
       id: coordinator.principalId,
     },
   });
-  console.log("Created coordinator:", newCoordinator);
   await updatePrincipal(coordinator.principalId, {
     ...principal,
     coordinators: {
@@ -47,8 +44,6 @@ export async function updateCoordinator(
   id: number,
   coordinator: CoordinatorType
 ) {
-  console.log("Updating coordinator with data:", coordinator);
-  console.log("coordinator.id", coordinator.id);
   const updatedCoordinator = await prisma.coordinator.update({
     where: {
       id: id,
@@ -64,4 +59,20 @@ export async function updateCoordinator(
   });
 
   return updatedCoordinator;
+}
+
+export async function deleteCoordinator(id: number) {
+  await prisma.coordinator.delete({
+    where: {
+      id: id,
+    },
+  });
+
+  return;
+}
+
+export async function getAllCoordinators() {
+  const coordinators = await prisma.coordinator.findMany();
+
+  return coordinators;
 }

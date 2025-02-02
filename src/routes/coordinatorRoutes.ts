@@ -4,8 +4,8 @@ const coordinatorRouter = express.Router();
 
 coordinatorRouter.post("/create", coordinatorController.create);
 coordinatorRouter.put("/update/:id", coordinatorController.update);
-// // coordinatorRouter.delete("/delete", coordinatorController.delete);
-// // coordinatorRouter.get("/getAll", coordinatorController.getAll);
+coordinatorRouter.delete("/delete/:id", coordinatorController.remove);
+coordinatorRouter.get("/getAll", coordinatorController.getAll);
 coordinatorRouter.get("/getById/:id", coordinatorController.getById);
 
 export default coordinatorRouter;

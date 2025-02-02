@@ -18,7 +18,7 @@ export async function createPrincipal(data: PrincipalType) {
 }
 
 export async function updatePrincipal(id: number, data: any) {
-  console.log("Updating principal with data:", data);
+  // console.log("data", data.coordinators);
   const principal = await prisma.principal.update({
     where: { id: id },
     data: {
@@ -31,7 +31,7 @@ export async function updatePrincipal(id: number, data: any) {
     },
   });
 
-  console.log("Updated principal:", principal);
+  // console.log("Updated principal:", principal);
 
   return principal;
 }

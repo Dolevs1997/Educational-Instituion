@@ -36,7 +36,6 @@ beforeAll(async () => {
     .send(principal)
     .expect(201);
 
-  console.log("res.body", res.body);
   pricipalId = res.body.id;
   coordinator.principalId = pricipalId;
   coordinator.principal = res.body;
@@ -52,16 +51,13 @@ describe("-----Coordinator Test------", () => {
       .post("/coordinator/create")
       .send(coordinator);
     expect(res.status).toBe(201);
-    console.log("res.body", res.body);
-    console.log(res.body.id);
+
     coordinatorId = res.body.id;
   });
 
   test("get coordinator by id", async () => {
-    const res = await request(app)
-      .get(`/coordinator/getById/${coordinatorId}`)
-      .expect(200);
-    console.log("res.body", res.body);
+    const res = await request(app).get(`/coordinator/getById/${coordinatorId}`);
+    expect(res.status).toBe(200);
   });
 
   test("update coordinator", async () => {
@@ -69,14 +65,27 @@ describe("-----Coordinator Test------", () => {
       .put("/coordinator/update/" + coordinatorId)
       .send({ ...coordinator, name: "Jane Doe Updated" })
       .expect(200);
-    console.log("res.body", res.body);
     expect(res.body.name).toBe("Jane Doe Updated");
+    console.log("coordinatorId", coordinatorId);
+  });
+
+  test("get all coordinators", async () => {
+    const res = await request(app).get("/coordinator/getAll");
+    expect(res.status).toBe(200);
   });
 
   test("delete coordinator", async () => {
-    const res = await request(app)
-      .delete("/coordinator/delete" + coordinatorId)
-      .expect(200);
+    console.log("coordinatorId", coordinatorId);
+    const res = await request(app).delete(
+      `/coordinator/delete/${coordinatorId}`
+    );
+    expect(res.status).toBe(200);
     console.log("res.body", res.body);
+  });
+
+  test("get coordinator by id after deletion", async () => {
+    const res = await request(app).get(`/coordinator/getById/${coordinatorId}`);
+    expect(res.status).toBe(404);
+    expect(res.body.message).toBe("Coordinator not found");
   });
 });

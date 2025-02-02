@@ -3,6 +3,8 @@ import {
   createCoordinator,
   getCoordinatorById,
   updateCoordinator,
+  deleteCoordinator,
+  getAllCoordinators,
 } from "../models/coordinatorModel";
 import zod from "zod";
 import { coordinatorZodSchema } from "../schemas/coordinatorSchemas";
@@ -24,14 +26,12 @@ const create = async (req: Request, res: Response): Promise<any> => {
 };
 
 const getById = async (req: Request, res: Response): Promise<any> => {
-  try {
-    const id = parseInt(req.params.id);
-    const coordinator = await getCoordinatorById(id);
+  const id = parseInt(req.params.id);
+  const coordinator = await getCoordinatorById(id);
 
-    res.status(200).send(coordinator);
-  } catch (error: any) {
-    res.status(500).send(error);
-  }
+  if (!coordinator) {
+    res.status(404).send({ message: "Coordinator not found" });
+  } else res.status(200).send(coordinator);
 };
 
 const update = async (req: Request, res: Response): Promise<any> => {
@@ -39,7 +39,6 @@ const update = async (req: Request, res: Response): Promise<any> => {
     const id = parseInt(req.params.id);
     const coordinator = coordinatorZodSchema.parse(req.body);
     const updatedCoordinator = await updateCoordinator(id, coordinator);
-    console.log("updatedCoordinator", updatedCoordinator);
     res.status(200).send(updatedCoordinator);
   } catch (error: any) {
     console.error("Error in update controller:", error);
@@ -51,4 +50,27 @@ const update = async (req: Request, res: Response): Promise<any> => {
   }
 };
 
-export default { create, getById, update };
+const remove = async (req: Request, res: Response): Promise<any> => {
+  console.log("req.params", req.params);
+  console.log("remove controller");
+  try {
+    const id = parseInt(req.params.id);
+    await deleteCoordinator(id);
+    res.status(200).send({ message: "Coordinator deleted successfully" });
+  } catch (error: any) {
+    res.status(500).send(error);
+  }
+};
+
+const getAll = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const coordinators = await getAllCoordinators();
+    res.status(200).send(coordinators);
+  } catch (error: any) {
+    res
+      .status(500)
+      .send({ message: "Error in getting all coordinators", error });
+  }
+};
+
+export default { create, getById, update, remove, getAll };
