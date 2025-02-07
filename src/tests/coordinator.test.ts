@@ -7,6 +7,7 @@ const prisma = new PrismaClient();
 let app: Express;
 let pricipalId: number | undefined;
 let coordinatorId: number | undefined;
+let p: PrincipalType | null;
 const principal: PrincipalType = {
   name: "John Doe",
   email: "JohnDoe@gmail.com",
@@ -55,6 +56,35 @@ describe("-----Coordinator Test------", () => {
     coordinatorId = res.body.id;
   });
 
+  test("create 2nd coordinator", async () => {
+    const res = await request(app).post("/coordinator/create").send({
+      name: "Jenny",
+      email: "jenny@gmail.com",
+      phone: "1234567890",
+      principalId: pricipalId,
+      department: "Math",
+    });
+    expect(res.status).toBe(201);
+    expect(res.body.name).toBe("Jenny");
+    p = await prisma.principal.findUnique({
+      where: { id: pricipalId },
+      include: {
+        coordinators: true,
+      },
+    });
+    console.log("p", p);
+  });
+
+  test("principal number of coordinators", async () => {
+    expect(p?.coordinators.length).toBe(2);
+  });
+
+  test("getting principal coordinators", async () => {
+    const res = await request(app).get(`/principal/get/${pricipalId}`);
+    expect(res.status).toBe(200);
+    console.log("res.body", res.body);
+  });
+
   test("get coordinator by id", async () => {
     const res = await request(app).get(`/coordinator/getById/${coordinatorId}`);
     expect(res.status).toBe(200);
@@ -79,8 +109,19 @@ describe("-----Coordinator Test------", () => {
     const res = await request(app).delete(
       `/coordinator/delete/${coordinatorId}`
     );
+    console.log("p after delete", p);
     expect(res.status).toBe(200);
     console.log("res.body", res.body);
+  });
+
+  test("principal number of coordinators after deletion", async () => {
+    p = await prisma.principal.findUnique({
+      where: { id: pricipalId },
+      include: {
+        coordinators: true,
+      },
+    });
+    expect(p?.coordinators.length).toBe(1);
   });
 
   test("get coordinator by id after deletion", async () => {

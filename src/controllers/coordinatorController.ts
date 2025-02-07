@@ -51,8 +51,6 @@ const update = async (req: Request, res: Response): Promise<any> => {
 };
 
 const remove = async (req: Request, res: Response): Promise<any> => {
-  console.log("req.params", req.params);
-  console.log("remove controller");
   try {
     const id = parseInt(req.params.id);
     await deleteCoordinator(id);

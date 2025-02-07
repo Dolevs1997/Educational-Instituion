@@ -18,6 +18,7 @@ export async function createCoordinator(coordinator: CoordinatorType) {
       id: coordinator.principalId,
     },
   });
+
   await updatePrincipal(coordinator.principalId, {
     ...principal,
     coordinators: {
