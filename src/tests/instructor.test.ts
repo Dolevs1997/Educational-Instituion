@@ -2,12 +2,17 @@ import initApp from "../../app";
 import request from "supertest";
 import { PrismaClient } from "@prisma/client";
 import { Express } from "express";
+import { CoordinatorType } from "../schemas/coordinatorSchemas";
+import { PrincipalType } from "../schemas/principalSchemas";
 
 const prisma = new PrismaClient();
 let app: Express;
 let principalId: number | undefined;
 let coordinatorId: number | undefined;
 let instructorId: number | undefined;
+let instructorId2: number | undefined;
+let c: CoordinatorType | null;
+let p: PrincipalType | null;
 
 const principal = {
   name: "Principal John",
@@ -92,6 +97,7 @@ describe("-----Instructor Test------", () => {
       principal: principal,
     });
     expect(res.status).toBe(201);
+    instructorId2 = res.body.id;
   });
 
   test("coordinator number of instructors should be 2", async () => {
@@ -130,5 +136,60 @@ describe("-----Instructor Test------", () => {
       });
     expect(res.status).toBe(200);
     expect(res.body.name).toBe("Bobby the Instructor Updated");
+  });
+
+  test("delete instructor", async () => {
+    const res = await request(app).delete("/instructor/delete/" + instructorId);
+    expect(res.status).toBe(200);
+  });
+
+  test("coordinator number of instructors should be 1", async () => {
+    c = await prisma.coordinator.findUnique({
+      where: { id: coordinatorId },
+      include: {
+        instructors: true,
+      },
+    });
+
+    expect(c?.instructors.length).toBe(1);
+  });
+
+  test("principal number of instructors should be 1", async () => {
+    p = await prisma.principal.findUnique({
+      where: { id: principalId },
+      include: {
+        instructors: true,
+      },
+    });
+
+    expect(p?.instructors.length).toBe(1);
+  });
+
+  test("delete 2nd instructor", async () => {
+    const res = await request(app).delete(
+      "/instructor/delete/" + instructorId2
+    );
+    expect(res.status).toBe(200);
+  });
+
+  test("coordinator number of instructors should be 0", async () => {
+    c = await prisma.coordinator.findUnique({
+      where: { id: coordinatorId },
+      include: {
+        instructors: true,
+      },
+    });
+    expect(c?.instructors.length).toBe(0);
+  });
+
+  test("principal number of instructors should be 0", async () => {
+    p = await prisma.principal.findUnique({
+      where: { id: principalId },
+      include: {
+        instructors: true,
+      },
+    });
+
+    expect(p?.instructors.length).toBe(0);
   });
 });

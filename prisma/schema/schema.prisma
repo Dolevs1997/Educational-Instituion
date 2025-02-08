@@ -50,7 +50,6 @@ model Instructor {
   principal  Principal @relation(fields: [principalId], references: [id])
   principalId Int
   students Student[]
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

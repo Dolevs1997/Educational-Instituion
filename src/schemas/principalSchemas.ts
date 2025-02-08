@@ -1,5 +1,5 @@
 import zod from "zod";
-import { instructorSchema } from "./instructorSchemas";
+import { instructorZodSchema } from "./instructorSchemas";
 import { coordinatorZodSchema } from "./coordinatorSchemas";
 
 export const principalZodSchema: zod.ZodSchema = zod.object({
@@ -8,8 +8,7 @@ export const principalZodSchema: zod.ZodSchema = zod.object({
   email: zod.string().email(),
   phone: zod.string(),
   coordinators: zod.array(zod.lazy(() => coordinatorZodSchema)).optional(),
-
-  instructors: zod.array(instructorSchema).optional(),
+  instructors: zod.array(zod.lazy(() => instructorZodSchema)).optional(),
   createdAt: zod.coerce.date().optional(),
   updatedAt: zod.coerce.date().optional(),
 });

@@ -3,7 +3,7 @@ import env from "dotenv";
 import { PrismaClient } from "@prisma/client";
 import principalRouter from "./src/routes/principalRoutes";
 import coordinatorRouter from "./src/routes/coordinatorRoutes";
-
+import instructorRouter from "./src/routes/instructorRoutes";
 env.config();
 
 async function initApp() {
@@ -20,6 +20,7 @@ async function initApp() {
   app.use(express.urlencoded({ extended: true }));
   app.use("/principal", principalRouter);
   app.use("/coordinator", coordinatorRouter);
+  app.use("/instructor", instructorRouter);
 
   return app;
 }
